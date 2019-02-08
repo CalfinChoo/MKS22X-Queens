@@ -3,14 +3,14 @@ public class QueenBoard{
   public QueenBoard(int size) {
     board = new int[size][size];
   }
-  public boolean addQueen(int r, int c) {
+  private boolean addQueen(int r, int c) {
+    if (r >= board.length || c >= board[0].length) return false;
     if (board[r][c] == 0) {
       board[r][c] = -1;
       for (int row = r + 1; row < board.length; row++) {
         for (int col = 0; col < board[row].length; col++) {
-          if (row == r || col == c || Math.abs(r - row) == c - col || Math.abs(r - row) ==  Math.abs(c - col)) {
+          if (col == c || Math.abs(r - row) == c - col || Math.abs(r - row) ==  Math.abs(c - col)) {
             if (board[row][col] == 0) board[row][col] = r + 1;
-            else if (board[row][col] != -1) return false;
           }
         }
       }
@@ -18,7 +18,7 @@ public class QueenBoard{
     }
     else return false;
   }
-  public boolean removeQueen(int r, int c) {
+  private boolean removeQueen(int r, int c) {
     if (board[r][c] == -1) {
       board[r][c] = 0;
       for (int row = r + 1; row < board.length; row++) {
@@ -67,25 +67,32 @@ public class QueenBoard{
   }
   public boolean solveHelper(int row, int col) {
     try{
-      for (int c : board[row]) {
-        if (c != 0) throw new IllegalStateException();
+      if (row < board.length) {
+        for (int c : board[row]) {
+          if (c == -1) throw new IllegalStateException();
+        }
       }
     } catch(IllegalStateException e) {
-      e.printStackTrace();
+        e.printStackTrace();
+        return false;
     }
     if (row < board.length) {
       if (addQueen(row, col)) return solveHelper(row + 1, 0);
       else {
-        if (col < board[row].length - 1) return solveHelper(row, col + 1);
-        if (row > 0) {
-          removeQueen(row,col);
-          int restart = 0;
-          for (int c = 0; c < board[row - 1].length; c++) {
-            if (board[row - 1][c] == -1) restart = c;
-          }
-          return solveHelper(row - 1, restart + 1);
+        if (col < board[row].length - 1) {
+          return solveHelper(row, col + 1);
         }
-        else return false;
+        else {
+          if (row > 0) {
+            int index = 0;
+            for (int c = 0; c < board[row].length; c++) {
+              if (board[row - 1][c] == -1) index = c;
+            }
+            removeQueen(row - 1, index);
+            return solveHelper(row - 1, index + 1);
+          }
+          else return false;
+        }
       }
     }
     else return true;
