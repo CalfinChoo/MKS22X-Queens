@@ -3,7 +3,7 @@ public class QueenBoard{
   public QueenBoard(int size) {
     board = new int[size][size];
   }
-  public boolean addQueen(int r, int c) { // adds a Queen to row r, col c and places threatened markers for the next rows/cols
+  private boolean addQueen(int r, int c) { // adds a Queen to row r, col c and places threatened markers for the next rows/cols
     if (r >= board.length || c >= board[0].length) return false;
     if (board[r][c] == 0) {
       board[r][c] = -1;

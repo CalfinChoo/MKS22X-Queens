@@ -1,6 +1,8 @@
 public class Driver{
   public static void main(String[] args) {
-    QueenBoard test = new QueenBoard(6);
+    
+      QueenBoard test = new QueenBoard(Integer.parseInt(args[0]));
+
     //test.solve();
     //System.out.println(test.solve());
     System.out.println(test.countSolutions());
