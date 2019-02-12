@@ -3,7 +3,7 @@ public class QueenBoard{
   public QueenBoard(int size) {
     board = new int[size][size];
   }
-  public boolean addQueen(int r, int c) {
+  public boolean addQueen(int r, int c) { // adds a Queen to row r, col c and places threatened markers for the next rows/cols
     if (r >= board.length || c >= board[0].length) return false;
     if (board[r][c] == 0) {
       board[r][c] = -1;
@@ -18,7 +18,7 @@ public class QueenBoard{
     }
     else return false;
   }
-  private boolean removeQueen(int r, int c) {
+  private boolean removeQueen(int r, int c) { // removes a Queen at row r, col c as well as its corresponding markers
     if (board[r][c] == -1) {
       board[r][c] = 0;
       for (int row = r; row < board.length; row++) {
@@ -66,8 +66,8 @@ public class QueenBoard{
     return solveHelper(0, false);
   }
   public boolean solveHelper(int row, boolean checked) {
-    if (board.length > 0 && row == board.length) return true;
-    if (!checked) {
+    if (board.length > 0 && row == board.length) return true;  // base case
+    if (!checked) { //checks once to see if board is clear
       try{
           for (int[] r : board) {
             for (int c : r) {
@@ -80,13 +80,13 @@ public class QueenBoard{
           return false;
       }
     }
-    for (int c = 0; c < board.length; c++) {
+    for (int c = 0; c < board.length; c++) { // attempts to addQueen to each row and removes it if it if it cannot add to the next
       if (addQueen(row, c)) {
-        if (solveHelper(row + 1, checked)) return true;
+        if (solveHelper(row + 1, checked)) return true; // returns true if a solution is found
         removeQueen(row, c);
       }
     }
-    return false;
+    return false; //returns false otherwise
   }
 
   /**
@@ -94,9 +94,29 @@ public class QueenBoard{
   *@throws IllegalStateException when the board starts with any non-zero value
   */
   public int countSolutions(){
-    return 1;
+    return countHelper(0, 0, board.length, false);
   }
-  public int countHelper(int row, int col, int count) {
-    return 0;
+  public int countHelper(int row, int count, int n, boolean checked) {
+    if (board.length > 0 && row == board.length) count++; // base case
+    if (!checked) {  //checks once to see if board is clear
+      try{
+          for (int[] r : board) {
+            for (int c : r) {
+              if (c != 0) throw new IllegalStateException();
+            }
+          }
+        checked = true;
+      } catch(IllegalStateException e) {
+          e.printStackTrace();
+      }
+    }
+    for (int c = 0; c < board.length; c++) {
+      if (addQueen(row, c)) { // attempts to addQueen to each row
+        int countUpdate = countHelper(row + 1, count, n-1, checked); // checks to see if a solution is made, updates the counter and proceeds to removeQueen and continue
+        if (countUpdate > count) count = countUpdate;
+        removeQueen(row, c);
+      }
+    }
+    return count; // if no (more) solutions are found, return count
   }
 }
